@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>XR Industrial Lab - Fases 1, 2 y 3</title>
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+</head>
+<body>
+
+  <!-- BOTONES -->
+  <button onclick="cambiarFase('fase1')" style="position:absolute;top:10px;left:10px;z-index:1000;padding:12px;background:#4CAF50;color:white;border:none;border-radius:5px;font-size:14px;">Fase 1</button>
+  <button onclick="cambiarFase('fase2')" style="position:absolute;top:10px;left:120px;z-index:1000;padding:12px;background:#FF5722;color:white;border:none;border-radius:5px;font-size:14px;">Fase 2 Banda</button>
+  <button onclick="cambiarFase('fase3')" style="position:absolute;top:10px;left:240px;z-index:1000;padding:12px;background:#9C27B0;color:white;border:none;border-radius:5px;font-size:14px;">Fase 3 CAD</button>
+
+  <a-scene>
+    <!-- CAMARA -->
+    <a-entity camera look-controls wasd-controls position="0 1.6 8"></a-entity>
+
+    <!-- LUCES GLOBALES -->
+    <a-light type="ambient" intensity="0.7"></a-light>
+    <a-light type="directional" position="4 8 4"></a-light>
+
+    <!-- FASE 1: PRIMITIVAS BASICAS -->
+    <a-entity id="fase1" visible="true">
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+      <a-sky color="#ECECEC"></a-sky>
+    </a-entity>
+
+    <!-- FASE 2: BANDA CON SENSORES -->
+    <a-entity id="fase2" visible="false">
+      <!-- PISO -->
+      <a-plane
+        position="0 0 -6"
+        rotation="-90 0 0"
+        width="20"
+        height="20"
+        color="#9a9a9a">
+      </a-plane>
+
+      <!-- PARED -->
+      <a-plane
+        position="0 5 -15"
+        width="20"
+        height="10"
+        color="#d6e4f0">
+      </a-plane>
+
+      <!-- BANDA TRANSPORTADORA -->
+      <a-entity id="banda" position="0 0 -6">
+        <a-box
+          position="0 0.6 0"
+          width="8"
+          height="1"
+          depth="1.4"
+          color="#555">
+        </a-box>
+
+        <a-box
+          position="0 1.1 0"
+          width="7.5"
+          height="0.2"
+          depth="1"
+          color="#111">
+        </a-box>
+
+        <a-cylinder
+          position="-3.8 1.1 0"
+          radius="0.35"
+          height="1"
+          rotation="0 0 90"
+          color="#bbb">
+        </a-cylinder>
+
+        <a-cylinder
+          position="3.8 1.1 0"
+          radius="0.35"
+          height="1"
+          rotation="0 0 90"
+          color="#bbb">
+        </a-cylinder>
+      </a-entity>
+
+      <!-- SENSOR 1 -->
+      <a-entity position="-1 2 -6">
+        <a-box
+          position="0 -0.7 0"
+          width="0.2"
+          height="1.4"
+          depth="0.2"
+          color="#666">
+        </a-box>
+
+        <a-sphere
+          id="sensor1"
+          position="0 0 0"
+          radius="0.25"
+          color="red">
+        </a-sphere>
+      </a-entity>
+
+      <!-- SENSOR 2 -->
+      <a-entity position="1.5 2 -6">
+        <a-box
+          position="0 -0.7 0"
+          width="0.2"
+          height="1.4"
+          depth="0.2"
+          color="#666">
+        </a-box>
+
+        <a-sphere
+          id="sensor2"
+          position="0 0 0"
+          radius="0.25"
+          color="red">
+        </a-sphere>
+      </a-entity>
+
+      <!-- PRODUCTO -->
+      <a-box
+        id="caja"
+        position="-3 1.5 -6"
+        width="0.7"
+        height="0.7"
+        depth="0.7"
+        color="#ff5733"
+        animation="property: position; to: 3 1.5 -6; dur: 6000; loop: true">
+      </a-box>
+
+      <a-sky color="#cfe8ff"></a-sky>
+    </a-entity>
+
+    <!-- FASE 3: TU MODELO CAD -->
+    <a-entity id="fase3" visible="false">
+      <a-plane position="0 0 -5" rotation="-90 0 0" width="20" height="20" color="#8c8c8c"></a-plane>
+      <a-box position="0 0.5 -5" width="8" height="1" depth="1.2" color="#5a5a5a"></a-box>
+      <a-box position="0 1 -5" width="7.5" height="0.2" depth="1" color="#1a1a1a"></a-box>
+
+      <a-gltf-model
+        position="0 1.4 -5"
+        scale="0.4 0.4 0.4"
+        rotation="0 180 0"
+        src="models/robot-industrial.glb">
+      </a-gltf-model>
+
+      <a-sky color="#dbefff"></a-sky>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    function cambiarFase(faseActiva) {
+      document.getElementById('fase1').setAttribute('visible', false);
+      document.getElementById('fase2').setAttribute('visible', false);
+      document.getElementById('fase3').setAttribute('visible', false);
+      document.getElementById(faseActiva).setAttribute('visible', true);
+    }
+
+    let caja = document.querySelector("#caja");
+    let sensor1 = document.querySelector("#sensor1");
+    let sensor2 = document.querySelector("#sensor2");
+
+    setInterval(() => {
+      let x = caja.object3D.position.x;
+
+      if (x > -1.5 && x < -0.5) {
+        sensor1.setAttribute("color", "green");
+      } else {
+        sensor1.setAttribute("color", "red");
+      }
+
+      if (x > 1 && x < 2) {
+        sensor2.setAttribute("color", "green");
+      } else {
+        sensor2.setAttribute("color", "red");
+      }
+    }, 100);
+  </script>
+
+</body>
+</html>
